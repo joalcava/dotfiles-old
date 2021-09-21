@@ -68,7 +68,7 @@ set go-=r                   "remove right-hand scroll bar
 set go-=L                   "remove left-hand scroll bar
 set background=dark         "use dark themes
 
-set guifont=JetBrains\ Mono:h16:sb
+"set guifont=JetBrains\ Mono:h16:sb
 
 "-----------------------------------------------------------
 " Plugins
