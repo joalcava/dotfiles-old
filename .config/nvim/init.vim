@@ -26,6 +26,7 @@ set termguicolors
 set ignorecase
 
 set encoding=utf-8          "encoding
+set cmdheight=2							" more space for displaying messages
 set hlsearch                "highlight search matches
 set expandtab               "indent using spaces instead of tabs
 set shiftwidth=2            "the number of spaces to use for each indent
@@ -75,13 +76,11 @@ set guifont=JetBrains\ Mono:h16:sb
 call plug#begin('~/.vim/plugged')
 
 "syntax and languages
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'neoclide/coc.nvim', {'branch': 'releas e'}
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'rust-lang/rust.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'Omnisharp/omnisharp-vim'
-Plug 'dense-analysis/ale'
-Plug 'maxmellon/vim-jsx-pretty'
 Plug 'ap/vim-css-color'
 
 " git
@@ -184,12 +183,12 @@ call plug#end()
   noremap <leader>0 :tablast<cr>
 
 " Go next and previous tab
-nnoremap <Leader>[ :bprev<CR>
-nnoremap <Leader>] :bnext<CR>
+	nnoremap <Leader>[ :bprev<CR>
+	nnoremap <Leader>] :bnext<CR>
 
 " Go next and previous tab
-nnoremap <C-n> :tabprev<CR>
-nnoremap <C-m> :tabnext<CR>
+	nnoremap <C-n> :tabprev<CR>
+	nnoremap <C-m> :tabnext<CR>
 
 " Check file in shellcheck:
 	map <leader>s :!clear && shellcheck -x %<CR>
@@ -217,49 +216,135 @@ nnoremap <C-m> :tabnext<CR>
 " --- vim-signify
 set updatetime=100
 
-" --- Deoplete
-let g:deoplete#enable_at_startup = 1
+" --- COC
+" dont pass messages to |ins-completion-menu|
+  set shortmess+=c
+" Use Tab for trigger completion with characters ahead and navigate.
+	inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+	inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" --- ALE
-  nnoremap <C-Right> :ALENext<CR>
-  nnoremap <C-Left> :ALEPrevious<CR>
-  nnoremap <leader>h :ALEHover<CR>
-  nnoremap <leader>jd :ALEGoToDefinition<CR>
-  nnoremap <leader>fr :ALEFindReferences<CR>
-  nnoremap <leader>rr :ALERename<CR>
-	nnoremap <leader>im :ALEImport<CR>
-	let g:ale_completion_autoimport = 1
-  let g:ale_fixers = ['prettier', 'eslint']
-  let g:ale_fix_on_save = 1   "fix on save
+	function! s:check_back_space() abort
+		let col = col('.') - 1
+		return !col || getline('.')[col - 1]  =~# '\s'
+	endfunction
 
-  let g:ale_completion_symbols = {
-		\ 'text': '',
-		\ 'method': '',
-		\ 'function': '',
-		\ 'constructor': '',
-		\ 'field': '',
-		\ 'variable': '',
-		\ 'class': '',
-		\ 'interface': '',
-		\ 'module': '',
-		\ 'property': '',
-		\ 'unit': 'unit',
-		\ 'value': 'val',
-		\ 'enum': '',
-		\ 'keyword': 'keyword',
-		\ 'snippet': '',
-		\ 'color': 'color',
-		\ 'file': '',
-		\ 'reference': 'ref',
-		\ 'folder': '',
-		\ 'enum member': '',
-		\ 'constant': '',
-		\ 'struct': '',
-		\ 'event': 'event',
-		\ 'operator': '',
-		\ 'type_parameter': 'type param',
-		\ '<default>': 'v'
-  \ }
+" <c-space> triggers completion
+  inoremap <silent><expr> <c-space> coc#refresh()
+
+" Show docs of symbol under the cursor
+  nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+	inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+																\: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+	nmap <silent> [g <Plug>(coc-diagnostic-prev)
+	nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+	nmap <silent> gd <Plug>(coc-definition)
+	nmap <silent> gy <Plug>(coc-type-definition)
+	nmap <silent> gi <Plug>(coc-implementation)
+	nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+	nnoremap <silent> K :call <SID>show_documentation()<CR>
+	function! s:show_documentation()
+		if (index(['vim','help'], &filetype) >= 0)
+			execute 'h '.expand('<cword>')
+		elseif (coc#rpc#ready())
+			call CocActionAsync('doHover')
+		else
+			execute '!' . &keywordprg . " " . expand('<cword>')
+		endif
+	endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+	autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+	nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+	xmap <leader>f  <Plug>(coc-format-selected)
+	nmap <leader>f  <Plug>(coc-format-selected)
+
+	augroup mygroup
+		autocmd!
+		" Setup formatexpr specified filetype(s).
+		autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+		" Update signature help on jump placeholder.
+		autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+	augroup end
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+	xmap <leader>a  <Plug>(coc-codeaction-selected)
+	nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+	nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+	nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+	xmap if <Plug>(coc-funcobj-i)
+	omap if <Plug>(coc-funcobj-i)
+	xmap af <Plug>(coc-funcobj-a)
+	omap af <Plug>(coc-funcobj-a)
+	xmap ic <Plug>(coc-classobj-i)
+	omap ic <Plug>(coc-classobj-i)
+	xmap ac <Plug>(coc-classobj-a)
+	omap ac <Plug>(coc-classobj-a)
+
+" Remap <C-f> and <C-b> for scroll float windows/popups.
+	if has('nvim-0.4.0') || has('patch-8.2.0750')
+		nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+		nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+		inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+		inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+		vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+		vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+	endif
+
+" Use CTRL-S for selections ranges.
+" Requires 'textDocument/selectionRange' support of language server.
+	nmap <silent> <C-s> <Plug>(coc-range-select)
+	xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer.
+	command! -nargs=0 Format :call CocAction('format')
+
+" Add `:Fold` command to fold current buffer.
+	command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer.
+	command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Mappings for CoCList
+" Show all diagnostics.
+	nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions.
+	nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" Show commands.
+	nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document.
+	nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols.
+	nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+	nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+	nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list.
+	nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
 " --- Goyo
 " makes text more readable when writing prose
@@ -281,11 +366,22 @@ let g:tokyonight_italic_functions = 1
 let g:tokyonight_sidebars = [ "qf", "terminal" ]
 
 " --- colorscheme
-colorscheme afterglow
-"chi Normal guibg=None ctermbg=NONE
+colorscheme gruvbox
 
 " --- lightline
-let g:lightline = {'colorscheme': 'darcula'}
+let g:lightline = {
+	\ 'colorscheme': 'gruvbox',
+	\ 'active': {
+	\   'left': [ [ 'mode', 'paste' ],
+	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+	\ },
+	\ 'component_function': {
+	\   'cocstatus': 'coc#status'
+	\ },
+	\ }
+
+" Use autocmd to force lightline update.
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 " --- webdevicons
 let g:webdevicons_enable = 1
