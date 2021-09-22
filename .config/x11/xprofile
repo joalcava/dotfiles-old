@@ -3,6 +3,8 @@
 # This file runs when a DM logs you into a graphical session.
 # If you use startx/xinit like a Chad, this file will also be sourced.
 
+export DOTNET_CLI_TELEMETRY_OUTPUT=1
+
 setbg &			# set the background with the `setbg` script
 xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources &	# Uncomment to use Xresources colors/settings on startup
 mpd &			# music player daemon-you might prefer it as a service though

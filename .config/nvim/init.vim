@@ -22,7 +22,7 @@ set noruler
 set laststatus=2
 set t_Co=256
 set noshowcmd
-set termguicolors
+" set termguicolors
 set ignorecase
 
 set encoding=utf-8          "encoding
@@ -85,6 +85,7 @@ Plug 'ap/vim-css-color'
 
 " git
 Plug 'mhinz/vim-signify'
+Plug 'jreybert/vimagit'
 
 "file and directory management
 Plug 'scrooloose/nerdtree'
@@ -98,7 +99,6 @@ Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'mg979/vim-visual-multi'
 Plug 'junegunn/goyo.vim'
-Plug 'jreybert/vimagit'
 Plug 'tpope/vim-commentary'
 Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
@@ -165,10 +165,6 @@ call plug#end()
 
 " create a mark
   nnoremap gm m
-
-" open fzf using only git files
-  nnoremap <C-p> :GFiles<CR>
-  nnoremap <leader>p :FZF<CR>
 
 " Tabs bindings
   noremap <leader>1 1gt
@@ -366,7 +362,7 @@ let g:tokyonight_italic_functions = 1
 let g:tokyonight_sidebars = [ "qf", "terminal" ]
 
 " --- colorscheme
-colorscheme gruvbox
+" colorscheme gruvbox
 
 " --- lightline
 let g:lightline = {
