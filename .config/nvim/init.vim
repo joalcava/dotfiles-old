@@ -365,8 +365,8 @@ let g:tokyonight_sidebars = [ "qf", "terminal" ]
 " colorscheme gruvbox
 
 " --- lightline
+" \ 'colorscheme': 'gruvbox',
 let g:lightline = {
-	\ 'colorscheme': 'gruvbox',
 	\ 'active': {
 	\   'left': [ [ 'mode', 'paste' ],
 	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
