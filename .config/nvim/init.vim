@@ -166,6 +166,10 @@ call plug#end()
 " create a mark
   nnoremap gm m
 
+" open fzf using only git files
+  nnoremap <C-p> :GFiles<CR>
+  nnoremap <leader>p :FZF<CR>
+
 " Tabs bindings
   noremap <leader>1 1gt
   noremap <leader>2 2gt
