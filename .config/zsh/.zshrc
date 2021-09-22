@@ -100,10 +100,13 @@ bindkey '^[[P' delete-char
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 
-# Load git ohmyzsh plugin
+eval "$(zoxide init zsh)"
+
+# git aliases plugin
 source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/git.plugin.zsh"
 
-eval "$(zoxide init zsh)"
+# zsh-autosuggestions
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Load syntax highlighting; should be last.
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh 2>/dev/null
