@@ -22,8 +22,11 @@ set noruler
 set laststatus=2
 set t_Co=256
 set noshowcmd
-" set termguicolors
-set ignorecase
+set termguicolors
+
+set foldmethod=syntax       "folding method
+set nofoldenable            "do not fold file by default
+set foldlevel=2             "do not fold before 2nd level
 
 set encoding=utf-8          "encoding
 set cmdheight=2							" more space for displaying messages
@@ -135,11 +138,11 @@ call plug#end()
 	nnoremap <C-L> <C-W><C-L>
 	nnoremap <C-H> <C-W><C-H>
 
-" set tab features just like browser
-  map <C-t> <Esc>:tabnew<CR>
-  map <C-w> <Esc>:tabclose<CR>
-  map <C-Tab> <Esc>:tabnext<CR>
-  map <C-S-Tab> <Esc>:tabprev<CR>
+" if you work with tabs
+" map <C-t> <Esc>:tabnew<CR>
+" map <C-w> <Esc>:tabclose<CR>
+" map <C-Tab> <Esc>:tabnext<CR>
+" map <C-S-Tab> <Esc>:tabprev<CR>
 
 " allow to go up an down wrapped lines
   map j gj
@@ -212,6 +215,11 @@ call plug#end()
 "-----------------------------------------------------------
 " Plugin specific
 "-----------------------------------------------------------
+
+" --- barbar
+nnoremap <silent> <C-w> :BufferClose<CR>
+nnoremap <silent> <C-,> :BufferPrevious<CR>
+nnoremap <silent> <C-.> :BufferNext<CR>
 
 " --- vim-signify
 set updatetime=100
@@ -366,7 +374,7 @@ let g:tokyonight_italic_functions = 1
 let g:tokyonight_sidebars = [ "qf", "terminal" ]
 
 " --- colorscheme
-" colorscheme gruvbox
+colorscheme gruvbox
 
 " --- lightline
 " \ 'colorscheme': 'gruvbox',
@@ -414,3 +422,6 @@ let g:OmniSharp_selector_ui = 'fzf'
 let g:VM_maps = {}
 let g:VM_maps["Undo"]      = 'u'
 let g:VM_maps["Redo"]      = '<C-r>'
+
+" leave it here because apparently there is a plugin overriding it
+set smartcase
