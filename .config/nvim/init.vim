@@ -104,6 +104,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-repeat'
 Plug 'Yggdroot/indentLine'
+Plug 'vimwiki/vimwiki'
 
 "themes and appearance
 Plug 'romgrk/barbar.nvim'
@@ -212,6 +213,15 @@ call plug#end()
 "-----------------------------------------------------------
 " Plugin specific
 "-----------------------------------------------------------
+
+" --- vimwiki
+"  ensure files are read as they should
+	let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+	map <leader>v :VimwikiIndex
+	let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
+	autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
+	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
+	autocmd BufRead,BufNewFile *.tex set filetype=tex
 
 " --- vim-signify
 set updatetime=100
