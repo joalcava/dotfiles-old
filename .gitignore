@@ -1,2 +1,4 @@
+.dotFiles
 .config/zsh/.zdirs
+.config/zsh/.zcompdump
 .config/nvim/plugged
