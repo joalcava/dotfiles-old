@@ -76,7 +76,7 @@ set background=dark         "use dark themes
 call plug#begin('~/.vim/plugged')
 
 "syntax and languages
-Plug 'neoclide/coc.nvim', {'branch': 'releas e'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'rust-lang/rust.vim'
 Plug 'sheerun/vim-polyglot'
