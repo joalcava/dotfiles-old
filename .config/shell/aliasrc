@@ -72,6 +72,3 @@ alias \
 
 # configs bare repo
 alias config="git --git-dir=$HOME/.dotFiles --work-tree=$HOME"
-
-# launch rider
-alias rider="sh $HOME/apps/rider/bin/rider.sh"
