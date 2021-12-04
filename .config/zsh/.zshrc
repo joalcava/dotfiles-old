@@ -8,8 +8,8 @@ stty stop undef		# Disable ctrl-s to freeze terminal.
 setopt interactive_comments
 
 # History in cache directory:
-HISTSIZE=100000000
-SAVEHIST=100000000
+HISTSIZE=10000000
+SAVEHIST=10000000
 HISTFILE=~/.cache/zsh/history
 
 # Load aliases and shortcuts if existent.
@@ -51,7 +51,18 @@ zle -N zle-line-init
 echo -ne '\e[5 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
-# ex = EXtractor for all kinds of archives
+# Use lf to switch directories and bind it to ctrl-o
+lfcd () {
+    tmp="$(mktemp)"
+    lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp" >/dev/null
+        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+    fi
+}
+
+# Extractor for all kinds of archives
 # usage: ex <file>
 ex ()
 {
@@ -78,16 +89,6 @@ ex ()
   fi
 }
 
-# Use lf to switch directories and bind it to ctrl-o
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp" >/dev/null
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
 bindkey -s '^o' 'lfcd\n'
 
 bindkey -s '^a' 'bc -lq\n'
@@ -100,8 +101,6 @@ bindkey '^[[P' delete-char
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 
-eval "$(zoxide init zsh)"
-
 # git aliases plugin
 source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/git.plugin.zsh"
 
@@ -110,5 +109,7 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Load syntax highlighting; should be last.
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh 2>/dev/null
+
+eval "$(zoxide init zsh)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

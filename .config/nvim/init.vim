@@ -26,7 +26,6 @@ set termguicolors
 
 set foldmethod=syntax       "folding method
 set nofoldenable            "do not fold file by default
-set foldlevel=2             "do not fold before 2nd level
 
 set encoding=utf-8          "encoding
 set cmdheight=2							" more space for displaying messages
@@ -89,6 +88,7 @@ Plug 'ap/vim-css-color'
 " git
 Plug 'mhinz/vim-signify'
 Plug 'jreybert/vimagit'
+Plug 'tveskag/nvim-blame-line'
 
 "file and directory management
 Plug 'scrooloose/nerdtree'
@@ -133,17 +133,36 @@ call plug#end()
 " Spell-check set to <leader>o, 'o' for 'orthography':
 	map <leader>o :setlocal spell! spelllang=en_us<CR>
 
+" consistent behaviour for capital letters
+	nnoremap Y y$
+
+" Keep it centered
+  nnoremap n nzzzv
+  nnoremap N Nzzzv
+  nnoremap J mzJ`z
+
+" Add charactes to undo list
+  inoremap , ,<c-g>u
+  inoremap . .<c-g>u
+  inoremap ! !<c-g>u
+  inoremap ? ?<c-g>u
+  inoremap ( (<c-g>u
+  inoremap ) )<c-g>u
+  inoremap { {<c-g>u
+  inoremap } }<c-g>u
+  inoremap [ [<c-g>u
+  inoremap ] ]<c-g>u
+
 " switch between splits more easily
 	nnoremap <C-J> <C-W><C-J>
 	nnoremap <C-K> <C-W><C-K>
 	nnoremap <C-L> <C-W><C-L>
 	nnoremap <C-H> <C-W><C-H>
 
-" if you work with tabs
-" map <C-t> <Esc>:tabnew<CR>
-" map <C-w> <Esc>:tabclose<CR>
-" map <C-Tab> <Esc>:tabnext<CR>
-" map <C-S-Tab> <Esc>:tabprev<CR>
+	nnoremap <C-Down> <C-W><C-J>
+	nnoremap <C-Up> <C-W><C-K>
+	nnoremap <C-Right> <C-W><C-L>
+	nnoremap <C-Left> <C-W><C-H>
 
 " allow to go up an down wrapped lines
   map j gj
@@ -161,8 +180,8 @@ call plug#end()
   nmap <leader>rc :so $MYVIMRC<CR>
 
 " split the current file
-  map <F6> :split<CR>
-  map <S-F6> : vsplit<CR>
+  map <F6> :vsplit<CR>
+  map <C-F6> : split<CR>
 
 " clear search with shift+enter
   nnoremap <C-x> :noh<CR>
@@ -187,12 +206,12 @@ call plug#end()
   noremap <leader>0 :tablast<cr>
 
 " Go next and previous tab
-	nnoremap <Leader>[ :bprev<CR>
-	nnoremap <Leader>] :bnext<CR>
+	" nnoremap <Leader>[ :bprev<CR>
+	" nnoremap <Leader>] :bnext<CR>
 
 " Go next and previous tab
-	nnoremap <C-n> :tabprev<CR>
-	nnoremap <C-m> :tabnext<CR>
+	" nnoremap <C-n> :tabprev<CR>
+	" nnoremap <C-m> :tabnext<CR>
 
 " Check file in shellcheck:
 	map <leader>s :!clear && shellcheck -x %<CR>
@@ -219,8 +238,11 @@ call plug#end()
 
 " --- barbar
 	nnoremap <silent> <C-w> :BufferClose<CR>
-	nnoremap <silent> <C-,> :BufferPrevious<CR>
-	nnoremap <silent> <C-.> :BufferNext<CR>
+	nnoremap <silent> <C-k> :BufferPrevious<CR>
+	nnoremap <silent> <C-h> :BufferNext<CR>
+
+" --- blame line
+nnoremap <silent> <leader>b :ToggleBlameLine<CR>
 
 " --- vimwiki
 " ensure files are read as they should
@@ -235,6 +257,31 @@ call plug#end()
 	set updatetime=100
 
 " --- COC
+" extensions
+	let g:coc_global_extensions = [
+		\ 'coc-clangd',
+		\ 'coc-cmake',
+		\ 'coc-css',
+		\ 'coc-dot-complete',
+		\ 'coc-eslint',
+		\ 'coc-fzf-preview',
+		\ 'coc-git',
+		\ 'coc-html',
+		\ 'coc-json',
+		\ 'coc-markdownlint',
+		\ 'coc-omnisharp',
+		\ 'coc-prettier',
+		\ 'coc-rls',
+		\ 'coc-sh',
+		\ 'coc-sql',
+		\ 'coc-tailwindcss',
+		\ 'coc-tsserver',
+		\ 'coc-vimlsp',
+		\ 'coc-xml',
+		\ 'coc-yaml',
+		\ 'coc-yank'
+	\ ]
+
 " dont pass messages to |ins-completion-menu|
   set shortmess+=c
 " Use Tab for trigger completion with characters ahead and navigate.
@@ -262,8 +309,8 @@ call plug#end()
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-	nmap <silent> [g <Plug>(coc-diagnostic-prev)
-	nmap <silent> ]g <Plug>(coc-diagnostic-next)
+	nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
+	nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
 	nmap <silent> gd <Plug>(coc-definition)
@@ -371,12 +418,6 @@ call plug#end()
 " --- NERDTree
 	map <leader>n :NERDTreeToggle<CR>
   map <leader>e :NERDTreeFind<CR>
-	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-    if has('nvim')
-        let NERDTreeBookmarksFile = stdpath('data') . '/NERDTreeBookmarks'
-    else
-        let NERDTreeBookmarksFile = '~/.vim' . '/NERDTreeBookmarks'
-    endif
 
 " --- tokyonight
 let g:tokyonight_style = "storm"
