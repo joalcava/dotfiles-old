@@ -2,3 +2,8 @@
 .config/zsh/.zdirs
 .config/zsh/.zcompdump
 .config/nvim/plugged
+
+*.orig
+*.rej
+larbs.pdf
+*.o
