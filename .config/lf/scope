@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+
+set -C -f -u
+#IFS=$'\n'
+IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}"
+
+# ANSI color codes are supported.
+# STDIN is disabled, so interactive scripts won't work properly
 
 # This script is considered a configuration file and must be updated manually.
 
@@ -9,65 +16,43 @@
 # 1    | no preview | Display no preview at all
 # 2    | plain text | Display the plain content of the file
 
-draw() {
-  ~/.config/lf/draw_img.sh "$@"
-  exit 1
+# Script arguments
+FILE_PATH="${1}"         # Full path of the highlighted file
+HEIGHT="${2}"
+
+#FILE_EXTENSION="${FILE_PATH##*.}"
+#FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
+
+# Settings
+HIGHLIGHT_SIZE_MAX=262143  # 256KiB
+HIGHLIGHT_TABWIDTH=8
+HIGHLIGHT_STYLE='pablo'
+
+
+handle_mime() {
+    local mimetype="${1}"
+    case "${mimetype}" in
+	text/html) w3m -dump "${FILE_PATH}" ;;
+	text/troff) man ./ "${FILE_PATH}" | col -b ;;
+	text/* | */xml)
+            if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]; then
+                exit 2
+            fi
+            if [ "$( tput colors )" -ge 256 ]; then
+                local highlight_format='xterm256'
+            else
+                local highlight_format='ansi'
+            fi
+            highlight --replace-tabs="${HIGHLIGHT_TABWIDTH}" --out-format="${highlight_format}" \
+                --style="${HIGHLIGHT_STYLE}" --force -- "${FILE_PATH}" ;;
+	application/zip) atool --list -- "${FILE_PATH}" ;;
+        image/*) chafa --fill=block --symbols=block -c 256 -s 80x"${HEIGHT}" "${FILE_PATH}" || exit 1;;
+        video/* | audio/*|application/octet-stream) mediainfo "${FILE_PATH}" || exit 1;;
+        */pdf) pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - ;;
+        *opendocument*) odt2txt "${FILE_PATH}" ;;
+    esac
 }
 
-hash() {
-  printf '%s/.cache/lf/%s' "$HOME" \
-    "$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$1")" | sha256sum | awk '{print $1}')"
-}
-
-cache() {
-  if [ -f "$1" ]; then
-    draw "$@"
-  fi
-}
-
-set -C -f -u
-IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}"
-
-file="$1"
-shift
-
-if [ -n "$FIFO_UEBERZUG" ]; then
-  case "$(file -Lb --mime-type -- "$file")" in
-    text/html) w3m -dump "$file" ;;
-    text/troff) man ./ "$file" | col -b ;;
-    text/* | */xml)
-        if [ "$( stat --printf='%s' -- "$file" )" -gt 262143 ]; then
-            exit 2
-        fi
-        if [ "$( tput colors )" -ge 256 ]; then
-            local highlight_format='xterm256'
-        else
-            local highlight_format='ansi'
-        fi
-        highlight --replace-tabs=4 --out-format=xterm256 --style=pablo --force -- "$file" ;;
-    application/zip) atool --list -- "$file" ;;
-    */pdf) pdftotext -l 10 -nopgbrk -q -- "$file" - ;;
-    *opendocument*) odt2txt "$file" ;;
-    image/*)
-        orientation="$(identify -format '%[EXIF:Orientation]\n' -- "$file")"
-        if [ -n "$orientation" ] && [ "$orientation" != 1 ]; then
-          cache="$(hash "$file").jpg"
-          cache "$cache" "$@"
-          convert -- "$file" -auto-orient "$cache"
-          draw "$cache" "$@"
-        else
-          draw "$file" "$@"
-        fi
-        ;;
-    video/*)
-        cache="$(hash "$file").jpg"
-        cache "$cache" "$@"
-        ffmpegthumbnailer -i "$file" -o "$cache" -s 0
-        draw "$cache" "$@"
-        ;;
-  esac
-fi
-
-file -Lb -- "$1" | fold -s -w "$width"
-exit 0
-
+MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
+handle_mime "${MIMETYPE}"
+exit 1

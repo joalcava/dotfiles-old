@@ -27,6 +27,3 @@ hash -d cfmc=/home/joalcava/.config/ncmpcpp/config
 hash -d cfl=/home/joalcava/.config/lf/lfrc 
 hash -d cfL=/home/joalcava/.config/lf/scope 
 hash -d cfX=/home/joalcava/.config/sxiv/exec/key-handler 
-
-hash -d tria=/home/joalcava/projects/trinet/app 
-hash -d tris=/home/joalcava/projects/trinet/server 

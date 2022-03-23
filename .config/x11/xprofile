@@ -3,6 +3,10 @@
 # This file runs when a DM logs you into a graphical session.
 # If you use startx/xinit like a Chad, this file will also be sourced.
 
+xrandr --dpi 96 --output DisplayPort-1 --pos 1920x0 --output HDMI-A-0 --pos 0x231
+xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!
+wpch &	# change the background with the `setbg` script each 30m
+
 # optout dotnet telemetry
 export DOTNET_CLI_TELEMETRY_OUTPUT=1
 
@@ -12,16 +16,14 @@ eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
 export $(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
 dbus-update-activation-environment --systemd DISPLAY
 
-xrandr --output DisplayPort-1 --pos 1920x0 --dpi 96 --output HDMI-A-0 --pos 0x231
-setbg &			# set the background with the `setbg` script
-flameshot &
-xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Use Xresources colors/settings on startup
 
-autostart="mpd xcompmgr dunst unclutter pipewire"
+autostart="mpd dunst unclutter pipewire"
 
 for program in $autostart; do
 	pidof -s "$program" || setsid -f "$program"
 done >/dev/null 2>&1
+
+source /home/joalcava/.screenlayout/default.sh
 
 # Ensure that xrdb has finished running before moving on to start the WM/DE.
 [ -n "$xrdbpid" ] && wait "$xrdbpid"

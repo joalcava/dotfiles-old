@@ -1,5 +1,5 @@
 !! HiDPI
-Xft.dpi: 120
+Xft.dpi: 130
 Xft.autohint: 0
 Xft.hintstyle: hintful
 Xft.antialias: 1
@@ -8,7 +8,7 @@ Xft.antialias: 1
 *.alpha: 0.8
 
 !! Set a default font and font size as below:
-*.font: monospace:size=10
+*.font: monospace:size=13
 
 /* name		dark	light */
 /* black	0	8 */

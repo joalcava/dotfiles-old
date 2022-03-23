@@ -28,3 +28,5 @@ cfmc="$EDITOR /home/joalcava/.config/ncmpcpp/config" \
 cfl="$EDITOR /home/joalcava/.config/lf/lfrc" \
 cfL="$EDITOR /home/joalcava/.config/lf/scope" \
 cfX="$EDITOR /home/joalcava/.config/sxiv/exec/key-handler" \
+tapp="$EDITOR /home/joalcava/projects/trinet/app" \
+tser="cd /home/joalcava/projects/trinet/server && $EDITOR ." \

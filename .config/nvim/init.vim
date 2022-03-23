@@ -11,7 +11,7 @@ if ! filereadable(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/autolo
 endif
 
 filetype plugin on
- let mapleader = " "
+let mapleader = " "
 
 set nocompatible            "vim defaults not vi
 set title
@@ -20,20 +20,19 @@ set nohlsearch
 set noshowmode
 set noruler
 set laststatus=2
-set t_Co=256
-set noshowcmd
 set termguicolors
-
+set noshowcmd
+set undofile
+set undodir=~/.vim/undodir
 set foldmethod=syntax       "folding method
 set nofoldenable            "do not fold file by default
-
 set encoding=utf-8          "encoding
-set cmdheight=2							" more space for displaying messages
+set cmdheight=2             "more space for displaying messages
 set hlsearch                "highlight search matches
 set expandtab               "indent using spaces instead of tabs
 set shiftwidth=2            "the number of spaces to use for each indent
 set softtabstop=2           "number of spaces to use for a <Tab> during editing operations
-set spelllang=en,es   	    "add es and en dictionaries to spelling
+set spelllang=en,es         "add es and en dictionaries to spelling
 set nowrap                  "don't wrap lines
 set showtabline=2           "always enable tabs
 set bs=2                    "allow backspacing over everything in insert mode
@@ -53,9 +52,8 @@ syntax on                   "switch on syntax highlighting.
 set cc=80                   "column at 80 characters
 set number relativenumber   "use relative numbers
 
-	nnoremap c "_c
-" Enable autocompletion:
-	" set wildmode=longest,list,full
+nnoremap c "_c
+
 " Disables automatic commenting on newline:
 	autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 " Perform dot commands over visual blocks:
@@ -70,66 +68,59 @@ set go-=r                   "remove right-hand scroll bar
 set go-=L                   "remove left-hand scroll bar
 set background=dark         "use dark themes
 
-"set guifont=JetBrains\ Mono:h16:sb
-
-"-----------------------------------------------------------
+"----------------------------------------------------------
 " Plugins
 "-----------------------------------------------------------
 call plug#begin('~/.vim/plugged')
 
-"syntax and languages
+"syntax, languages and completion
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'rust-lang/rust.vim'
 Plug 'sheerun/vim-polyglot'
+Plug 'SirVer/ultisnips'
 Plug 'Omnisharp/omnisharp-vim'
 Plug 'ap/vim-css-color'
 
 " git
-Plug 'mhinz/vim-signify'
+Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-signify' "?
 Plug 'jreybert/vimagit'
-Plug 'tveskag/nvim-blame-line'
+Plug 'APZelos/blamer.nvim'
 
 "file and directory management
-Plug 'scrooloose/nerdtree'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " movement
 Plug 'justinmk/vim-sneak'
 
 "util
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
-Plug 'mg979/vim-visual-multi'
-Plug 'junegunn/goyo.vim'
 Plug 'tpope/vim-commentary'
 Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
-Plug 'tpope/vim-repeat'
-Plug 'Yggdroot/indentLine'
+Plug 'junegunn/goyo.vim' "?
+Plug 'Yggdroot/indentLine' "?
 Plug 'vimwiki/vimwiki'
 
 "themes and appearance
+Plug 'sainnhe/everforest'
 Plug 'romgrk/barbar.nvim'
 Plug 'itchyny/lightline.vim'
-Plug 'ryanoasis/vim-devicons'
 Plug 'kyazdani42/nvim-web-devicons'
 
+Plug 'gruvbox-community/gruvbox'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'srcery-colors/srcery-vim'
-Plug 'morhetz/gruvbox'
 Plug 'joshdick/onedark.vim'
-Plug 'franbach/miramare'
-Plug 'jaredgorski/spacecamp'
-Plug 'haishanh/night-owl.vim'
-Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 
 call plug#end()
 
 "-----------------------------------------------------------
 " Bindings and configs
 "-----------------------------------------------------------
-
 " Spell-check set to <leader>o, 'o' for 'orthography':
 	map <leader>o :setlocal spell! spelllang=en_us<CR>
 
@@ -191,7 +182,7 @@ call plug#end()
 
 " open fzf using only git files
   nnoremap <C-p> :GFiles<CR>
-  nnoremap <leader>p :FZF<CR>
+  nnoremap <leader>p :Files<CR>
 
 " Tabs bindings
   noremap <leader>1 1gt
@@ -204,14 +195,6 @@ call plug#end()
   noremap <leader>8 8gt
   noremap <leader>9 9gt
   noremap <leader>0 :tablast<cr>
-
-" Go next and previous tab
-	" nnoremap <Leader>[ :bprev<CR>
-	" nnoremap <Leader>] :bnext<CR>
-
-" Go next and previous tab
-	" nnoremap <C-n> :tabprev<CR>
-	" nnoremap <C-m> :tabnext<CR>
 
 " Check file in shellcheck:
 	map <leader>s :!clear && shellcheck -x %<CR>
@@ -236,13 +219,19 @@ call plug#end()
 " Plugin specific
 "-----------------------------------------------------------
 
+" --- ultisnips
+let g:UltiSnipsExpandTrigger="<c-cab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
 " --- barbar
 	nnoremap <silent> <C-w> :BufferClose<CR>
 	nnoremap <silent> <C-k> :BufferPrevious<CR>
 	nnoremap <silent> <C-h> :BufferNext<CR>
 
 " --- blame line
-nnoremap <silent> <leader>b :ToggleBlameLine<CR>
+let g:blamer_delay = 500
+nnoremap <silent> <leader>b :BlamerToggle<CR>
 
 " --- vimwiki
 " ensure files are read as they should
@@ -397,7 +386,7 @@ nnoremap <silent> <leader>b :ToggleBlameLine<CR>
 " Show all diagnostics.
 	nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
 " Manage extensions.
-	nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+	" nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
 " Show commands.
 	nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document.
@@ -413,23 +402,22 @@ nnoremap <silent> <leader>b :ToggleBlameLine<CR>
 
 " --- Goyo
 " makes text more readable when writing prose
-	map <leader>f :Goyo \| set bg=light \| set linebreak<CR>
+	map <leader><leader>f :Goyo \| set bg=dark \| set linebreak<CR>
 
-" --- NERDTree
-	map <leader>n :NERDTreeToggle<CR>
-  map <leader>e :NERDTreeFind<CR>
+" --- chadtree
+	let t:chadtree_settings = {
+		\ 'theme.text_colour_set': 'env',
+	\ }
 
-" --- tokyonight
-let g:tokyonight_style = "storm"
-let g:tokyonight_italic_functions = 1
-let g:tokyonight_sidebars = [ "qf", "terminal" ]
+	map <leader>n :CHADopen<CR>
 
 " --- colorscheme
 colorscheme gruvbox
+let g:everforest_background = 'soft'
 
 " --- lightline
-" \ 'colorscheme': 'gruvbox',
 let g:lightline = {
+	\ 'colorscheme': 'gruvbox',
 	\ 'active': {
 	\   'left': [ [ 'mode', 'paste' ],
 	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
@@ -441,11 +429,6 @@ let g:lightline = {
 
 " Use autocmd to force lightline update.
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
-
-" --- webdevicons
-let g:webdevicons_enable = 1
-let g:webdevicons_enable_nerdtree = 1
-
 
 "-----------------------------------------------------------
 " Langugae Specific
