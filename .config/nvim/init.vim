@@ -66,7 +66,7 @@ set go-=T                   "removes the toolbar
 set go-=m                   "remove menu bar
 set go-=r                   "remove right-hand scroll bar
 set go-=L                   "remove left-hand scroll bar
-set background=dark         "use dark themes
+set background=light         "use dark themes
 
 "----------------------------------------------------------
 " Plugins
@@ -106,6 +106,10 @@ Plug 'Yggdroot/indentLine' "?
 Plug 'vimwiki/vimwiki'
 
 "themes and appearance
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'ayu-theme/ayu-vim'
+Plug 'altercation/vim-colors-solarized'
+Plug 'sonph/onehalf'
 Plug 'sainnhe/everforest'
 Plug 'romgrk/barbar.nvim'
 Plug 'itchyny/lightline.vim'
@@ -122,9 +126,10 @@ call plug#end()
 " Bindings and configs
 "-----------------------------------------------------------
 " Spell-check set to <leader>o, 'o' for 'orthography':
-	map <leader>o :setlocal spell! spelllang=en_us<CR>
+	nnoremap <leader>en :setlocal spell! spelllang=en_us<CR>
+	nnoremap <leader>es :setlocal spell! spelllang=es<CR>
 
-" consistent behaviour for capital letters
+" consistent behavior for capital letters
 	nnoremap Y y$
 
 " Keep it centered
@@ -132,7 +137,7 @@ call plug#end()
   nnoremap N Nzzzv
   nnoremap J mzJ`z
 
-" Add charactes to undo list
+" Add characters to undo list
   inoremap , ,<c-g>u
   inoremap . .<c-g>u
   inoremap ! !<c-g>u
@@ -219,11 +224,6 @@ call plug#end()
 " Plugin specific
 "-----------------------------------------------------------
 
-" --- ultisnips
-let g:UltiSnipsExpandTrigger="<c-cab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
 " --- barbar
 	nnoremap <silent> <C-w> :BufferClose<CR>
 	nnoremap <silent> <C-k> :BufferPrevious<CR>
@@ -251,17 +251,16 @@ nnoremap <silent> <leader>b :BlamerToggle<CR>
 		\ 'coc-clangd',
 		\ 'coc-cmake',
 		\ 'coc-css',
-		\ 'coc-dot-complete',
 		\ 'coc-eslint',
 		\ 'coc-fzf-preview',
 		\ 'coc-git',
 		\ 'coc-html',
 		\ 'coc-json',
 		\ 'coc-markdownlint',
-		\ 'coc-omnisharp',
 		\ 'coc-prettier',
 		\ 'coc-rls',
 		\ 'coc-sh',
+		\ 'coc-snippets',
 		\ 'coc-sql',
 		\ 'coc-tailwindcss',
 		\ 'coc-tsserver',
@@ -270,6 +269,26 @@ nnoremap <silent> <leader>b :BlamerToggle<CR>
 		\ 'coc-yaml',
 		\ 'coc-yank'
 	\ ]
+
+" coc-snippets
+
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
+
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+" Use <leader>x for convert visual selected code to snippet
+xmap <leader>x  <Plug>(coc-convert-snippet)
 
 " dont pass messages to |ins-completion-menu|
   set shortmess+=c
@@ -328,6 +347,7 @@ nnoremap <silent> <leader>b :BlamerToggle<CR>
 " Formatting selected code.
 	xmap <leader>f  <Plug>(coc-format-selected)
 	nmap <leader>f  <Plug>(coc-format-selected)
+	nmap <leader>F <Plug>(coc-format)
 
 	augroup mygroup
 		autocmd!
