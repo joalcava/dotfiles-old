@@ -66,7 +66,7 @@ set go-=T                   "removes the toolbar
 set go-=m                   "remove menu bar
 set go-=r                   "remove right-hand scroll bar
 set go-=L                   "remove left-hand scroll bar
-set background=light         "use dark themes
+set background=dark         "use dark themes
 
 "----------------------------------------------------------
 " Plugins
@@ -292,17 +292,18 @@ xmap <leader>x  <Plug>(coc-convert-snippet)
 
 " dont pass messages to |ins-completion-menu|
   set shortmess+=c
+
 " Use Tab for trigger completion with characters ahead and navigate.
 	inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+				\ pumvisible() ? "\<C-n>" :
+				\ CheckBackspace() ? "\<TAB>" :
+				\ coc#refresh()
 	inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-	function! s:check_back_space() abort
-		let col = col('.') - 1
-		return !col || getline('.')[col - 1]  =~# '\s'
-	endfunction
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
 " <c-space> triggers completion
   inoremap <silent><expr> <c-space> coc#refresh()
@@ -327,16 +328,15 @@ xmap <leader>x  <Plug>(coc-convert-snippet)
 	nmap <silent> gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
-	nnoremap <silent> K :call <SID>show_documentation()<CR>
-	function! s:show_documentation()
-		if (index(['vim','help'], &filetype) >= 0)
-			execute 'h '.expand('<cword>')
-		elseif (coc#rpc#ready())
-			call CocActionAsync('doHover')
-		else
-			execute '!' . &keywordprg . " " . expand('<cword>')
-		endif
-	endfunction
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 	autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -449,6 +449,9 @@ let g:lightline = {
 
 " Use autocmd to force lightline update.
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+
+" --- ultisnips
+let g:UltiSnipsExpandTrigger="<enter>"
 
 "-----------------------------------------------------------
 " Langugae Specific
